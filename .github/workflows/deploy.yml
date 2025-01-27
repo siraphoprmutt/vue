@@ -3,7 +3,7 @@ name: Deploy Vue App to GitHub Pages
 on:
   push:
     branches:
-      - main # เปลี่ยนเป็น branch หลักของคุณ
+      - main # หรือ branch ที่คุณทำงาน
 
 jobs:
   deploy:
