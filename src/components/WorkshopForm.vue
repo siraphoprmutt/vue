@@ -98,7 +98,9 @@
 
 <script setup>
 import { ref } from "vue";
-import Swal from "sweetalert2";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const workshops = ref([
   {
@@ -172,19 +174,15 @@ const handleFileUpload = (event) => {
 
 const submitForm = () => {
   if (selectedWorkshops.value.length === 0) {
-    Swal.fire("กรุณาเลือก Workshop อย่างน้อยหนึ่งรายการ", "", "warning");
+    toast.warning("กรุณาเลือก Workshop อย่างน้อยหนึ่งรายการ");
     return;
   }
 
-  Swal.fire({
-    title: "กำลังลงทะเบียน...",
-    allowOutsideClick: false,
-    didOpen: () => Swal.showLoading(),
-  });
+  toast.info("กำลังลงทะเบียน...", { timeout: false });
 
   setTimeout(() => {
-    Swal.close();
-    Swal.fire("สำเร็จ!", "ลงทะเบียนสำเร็จ!", "success");
+    toast.clear();
+    toast.success("ลงทะเบียนสำเร็จ!");
     const formDataCopy = {
       ...formData.value,
       workshops: selectedWorkshops.value,
