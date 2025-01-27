@@ -1,5 +1,7 @@
 # **จัดการหลายระบบใน Vue ผ่าน GitHub Pages**
 
+[clear_cache](https://siraphoprmutt.github.io/vue/?clear_cache=1)
+
 ## **1. แนวทางที่ 1: ใช้เส้นทางแบบ Nested Routing (แนะนำ)**
 
 หากระบบทั้งหมดแชร์โค้ดเดียวกัน สามารถใช้ **Vue Router** เพื่อจัดการเส้นทางสำหรับแต่ละระบบ:
