@@ -50,7 +50,12 @@ export default defineConfig({
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   server: {
-    port: 3000,
+    host: "0.0.0.0", // อนุญาตให้เข้าถึงจากทุกไอพี
+    port: 3000, // พอร์ตที่ต้องการใช้
+    allowedHosts: [
+      "localhost",
+      "science-ppm-joining-francis.trycloudflare.com", // เพิ่มโดเมนที่ Cloudflare กำหนดให้
+    ],
   },
   css: {
     preprocessorOptions: {
