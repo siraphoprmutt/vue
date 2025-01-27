@@ -1,79 +1,198 @@
-# Vuetify (Default)
+# **จัดการหลายระบบใน Vue ผ่าน GitHub Pages**
 
-This is the official scaffolding tool for Vuetify, designed to give you a head start in building your new Vuetify application. It sets up a base template with all the necessary configurations and standard directory structure, enabling you to begin development without the hassle of setting up the project from scratch.
+## **1. แนวทางที่ 1: ใช้เส้นทางแบบ Nested Routing (แนะนำ)**
 
-## ❗️ Important Links
+หากระบบทั้งหมดแชร์โค้ดเดียวกัน สามารถใช้ **Vue Router** เพื่อจัดการเส้นทางสำหรับแต่ละระบบ:
 
-- 📄 [Docs](https://vuetifyjs.com/)
-- 🚨 [Issues](https://issues.vuetifyjs.com/)
-- 🏬 [Store](https://store.vuetifyjs.com/)
-- 🎮 [Playground](https://play.vuetifyjs.com/)
-- 💬 [Discord](https://community.vuetifyjs.com)
+```ts
+import { createRouter, createWebHashHistory } from "vue-router";
 
-## 💿 Install
+const router = createRouter({
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: [
+    {
+      path: "/workshops",
+      component: () => import("@/layouts/WorkshopsLayout.vue"),
+      children: [
+        { path: "", component: () => import("@/views/workshops/Home.vue") },
+        {
+          path: "details",
+          component: () => import("@/views/workshops/Details.vue"),
+        },
+      ],
+    },
+    {
+      path: "/courses",
+      component: () => import("@/layouts/CoursesLayout.vue"),
+      children: [
+        { path: "", component: () => import("@/views/courses/Home.vue") },
+        { path: "info", component: () => import("@/views/courses/Info.vue") },
+      ],
+    },
+  ],
+});
 
-Set up your project using your preferred package manager. Use the corresponding command to install the dependencies:
-
-| Package Manager                                                | Command        |
-|---------------------------------------------------------------|----------------|
-| [yarn](https://yarnpkg.com/getting-started)                   | `yarn install` |
-| [npm](https://docs.npmjs.com/cli/v7/commands/npm-install)     | `npm install`  |
-| [pnpm](https://pnpm.io/installation)                          | `pnpm install` |
-| [bun](https://bun.sh/#getting-started)                        | `bun install`  |
-
-After completing the installation, your environment is ready for Vuetify development.
-
-## ✨ Features
-
-- 🖼️ **Optimized Front-End Stack**: Leverage the latest Vue 3 and Vuetify 3 for a modern, reactive UI development experience. [Vue 3](https://v3.vuejs.org/) | [Vuetify 3](https://vuetifyjs.com/en/)
-- 🗃️ **State Management**: Integrated with [Pinia](https://pinia.vuejs.org/), the intuitive, modular state management solution for Vue.
-- 🚦 **Routing and Layouts**: Utilizes Vue Router for SPA navigation and vite-plugin-vue-layouts for organizing Vue file layouts. [Vue Router](https://router.vuejs.org/) | [vite-plugin-vue-layouts](https://github.com/JohnCampionJr/vite-plugin-vue-layouts)
-- ⚡ **Next-Gen Tooling**: Powered by Vite, experience fast cold starts and instant HMR (Hot Module Replacement). [Vite](https://vitejs.dev/)
-- 🧩 **Automated Component Importing**: Streamline your workflow with unplugin-vue-components, automatically importing components as you use them. [unplugin-vue-components](https://github.com/antfu/unplugin-vue-components)
-
-These features are curated to provide a seamless development experience from setup to deployment, ensuring that your Vuetify application is both powerful and maintainable.
-
-## 💡 Usage
-
-This section covers how to start the development server and build your project for production.
-
-### Starting the Development Server
-
-To start the development server with hot-reload, run the following command. The server will be accessible at [http://localhost:3000](http://localhost:3000):
-
-```bash
-yarn dev
+export default router;
 ```
 
-(Repeat for npm, pnpm, and bun with respective commands.)
+### **โครงสร้างไฟล์**
 
-> Add NODE_OPTIONS='--no-warnings' to suppress the JSON import warnings that happen as part of the Vuetify import mapping. If you are on Node [v21.3.0](https://nodejs.org/en/blog/release/v21.3.0) or higher, you can change this to NODE_OPTIONS='--disable-warning=5401'. If you don't mind the warning, you can remove this from your package.json dev script.
-
-### Building for Production
-
-To build your project for production, use:
-
-```bash
-yarn build
+```plaintext
+src/
+│-- layouts/
+│   ├── WorkshopsLayout.vue
+│   ├── CoursesLayout.vue
+│-- views/
+│   ├── workshops/
+│   │   ├── Home.vue
+│   │   ├── Details.vue
+│   ├── courses/
+│       ├── Home.vue
+│       ├── Info.vue
 ```
 
-(Repeat for npm, pnpm, and bun with respective commands.)
+### **ตั้งค่า**
 
-Once the build process is completed, your application will be ready for deployment in a production environment.
+```js
+export default defineConfig({
+  base: isProduction ? "/vue/" : "./",
+});
+```
 
-## 💪 Support Vuetify Development
+---
 
-This project is built with [Vuetify](https://vuetifyjs.com/en/), a UI Library with a comprehensive collection of Vue components. Vuetify is an MIT licensed Open Source project that has been made possible due to the generous contributions by our [sponsors and backers](https://vuetifyjs.com/introduction/sponsors-and-backers/). If you are interested in supporting this project, please consider:
+## **2. แนวทางที่ 2: ใช้การ build แยกสำหรับแต่ละระบบ**
 
-- [Requesting Enterprise Support](https://support.vuetifyjs.com/)
-- [Sponsoring John on Github](https://github.com/users/johnleider/sponsorship)
-- [Sponsoring Kael on Github](https://github.com/users/kaelwd/sponsorship)
-- [Supporting the team on Open Collective](https://opencollective.com/vuetify)
-- [Becoming a sponsor on Patreon](https://www.patreon.com/vuetify)
-- [Becoming a subscriber on Tidelift](https://tidelift.com/subscription/npm/vuetify)
-- [Making a one-time donation with Paypal](https://paypal.me/vuetify)
+หากต้องการแยกโฟลเดอร์สำหรับแต่ละระบบ เช่น `dist/workshops/` และ `dist/courses/` ให้สร้าง config และ script แยกสำหรับแต่ละระบบ
 
-## 📑 License
-[MIT](http://opensource.org/licenses/MIT)
+```js
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-Copyright (c) 2016-present Vuetify, LLC
+export default defineConfig({
+  plugins: [vue()],
+  base: "/vue/workshops/",
+  build: {
+    outDir: "dist/workshops",
+  },
+});
+```
+
+```js
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+
+export default defineConfig({
+  plugins: [vue()],
+  base: "/vue/courses/",
+  build: {
+    outDir: "dist/courses",
+  },
+});
+```
+
+### **เพิ่ม script ใน**
+
+```json
+"scripts": {
+  "build:workshops": "vite build --config vite.workshops.config.js",
+  "build:courses": "vite build --config vite.courses.config.js",
+  "deploy": "npm run build:workshops && npm run build:courses && gh-pages -d dist"
+}
+```
+
+---
+
+## **3. แนวทางที่ 3: ใช้หลายโปรเจ็กต์ Vue แยกกัน**
+
+หากแต่ละระบบเป็นโครงการที่แยกจากกันอย่างสิ้นเชิง ให้แยกเป็นโฟลเดอร์อิสระ เช่น:
+
+`vue/
+│-- workshops/
+│   ├── src/
+│   ├── vite.config.js
+│-- courses/
+│   ├── src/
+│   ├── vite.config.js`
+
+### **ขั้นตอน Deploy**
+
+1. เข้าแต่ละโฟลเดอร์และ build:
+
+   ```sh
+   cd workshops && npm run build && cd ..
+   cd courses && npm run build && cd ..
+   ```
+
+2. Deploy:
+
+   ```sh
+   gh-pages -d dist/workshops
+   gh-pages -d dist/courses
+   ```
+
+---
+
+## 4: ใช้ GitHub Actions สำหรับการ build อัตโนมัติ\*\*
+
+```yaml
+name: Deploy Vue Multi-Projects
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-workshops:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build workshops
+        run: npm run build:workshops
+
+      - name: Deploy workshops to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist/workshops
+
+  build-courses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build courses
+        run: npm run build:courses
+
+      - name: Deploy courses to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist/courses
+```
+
+---
+
+### **สรุปวิธีที่แนะนำ**
+
+1. **ใช้ Vue Router ในโปรเจ็กต์เดียว** – เหมาะกับระบบที่แชร์โค้ดกัน
+2. **แยก build อิสระโดยใช้ config ต่างกัน** – เหมาะกับระบบที่แยกอิสระ
+3. **ใช้หลายโปรเจ็กต์ Vue แยกกัน** – เหมาะกับระบบที่ไม่มีความเกี่ยวข้องกัน
+4. **ใช้ GitHub Actions เพื่อ deploy อัตโนมัติ**
+
+สามารถเลือกตามความเหมาะสมและนำไปปรับใช้ในโปรเจ็กต์ของคุณได้ครับ! 🚀
