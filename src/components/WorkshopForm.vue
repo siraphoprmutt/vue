@@ -97,9 +97,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 
+const apiUrl = "https://disappointed-phentermine-managers-fo.trycloudflare.com";
 const toast = useToast();
 
 const workshops = ref([
@@ -172,7 +173,7 @@ const handleFileUpload = (event) => {
   }
 };
 
-const submitForm = () => {
+const submitForm = async () => {
   if (selectedWorkshops.value.length === 0) {
     toast.warning("กรุณาเลือก Workshop อย่างน้อยหนึ่งรายการ");
     return;
@@ -180,16 +181,43 @@ const submitForm = () => {
 
   toast.info("กำลังลงทะเบียน...", { timeout: false });
 
-  setTimeout(() => {
+  try {
+    const response = await fetch(`${apiUrl}/save-data`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData.value,
+        workshops: selectedWorkshops.value,
+      }),
+    });
+
+    if (response.ok) {
+      toast.clear();
+      toast.success("ลงทะเบียนสำเร็จ!");
+    } else {
+      throw new Error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    }
+  } catch (error) {
     toast.clear();
-    toast.success("ลงทะเบียนสำเร็จ!");
-    const formDataCopy = {
-      ...formData.value,
-      workshops: selectedWorkshops.value,
-    };
-    console.log("ลงทะเบียนสำหรับ Workshop:", formDataCopy);
-  }, 2000);
+    toast.error(error.message);
+  }
 };
+
+const init = async () => {
+  try {
+    const response = await fetch(`${apiUrl}/`);
+    const data = await response.json();
+    if (data) {
+      console.log("data:", data);
+    }
+  } catch (error) {
+    toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+  }
+};
+
+onMounted(() => {
+  init();
+});
 </script>
 
 <style lang="scss" scoped>
