@@ -9,9 +9,10 @@ import VueRouter from "unplugin-vue-router/vite";
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: "/vue/",
   plugins: [
     VueRouter(),
     Vue({
@@ -31,11 +32,23 @@ export default defineConfig({
           {
             name: "Roboto",
             styles: "wght@100;300;400;500;700;900",
+            defer: true,
           },
         ],
       },
     }),
   ],
+  base: isProduction ? "/vue/" : "./",
+  build: {
+    outDir: "dist",
+    rollupOptions: {
+      output: {
+        assetFileNames: "assets/[name]-[hash][extname]",
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+      },
+    },
+  },
   define: { "process.env": {} },
   resolve: {
     alias: {
