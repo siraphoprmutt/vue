@@ -1,0 +1,1 @@
+import{_ as s}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{aR as r,aV as o,aN as a}from"./index-lMP0Ga3C.js";const n={};function t(l,e){return a(),r("div",null,e[0]||(e[0]=[o("h1",null,"Workshops Page",-1),o("p",null,"This is the Workshops page.",-1)]))}const i=s(n,[["render",t]]);export{i as default};
