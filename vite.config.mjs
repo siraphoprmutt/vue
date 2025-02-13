@@ -38,6 +38,11 @@ export default defineConfig({
       },
     }),
   ],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./tests/setup/vitest.setup.js",
+  },
   base: isProduction ? "/vue/" : "./",
   build: {
     outDir: "dist",
@@ -50,12 +55,13 @@ export default defineConfig({
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   server: {
-    host: "0.0.0.0", // อนุญาตให้เข้าถึงจากทุกไอพี
-    port: 3000, // พอร์ตที่ต้องการใช้
-    allowedHosts: [
-      "localhost",
-      "science-ppm-joining-francis.trycloudflare.com", // เพิ่มโดเมนที่ Cloudflare กำหนดให้
-    ],
+    // host: "0.0.0.0", // อนุญาตให้เข้าถึงจากทุกไอพี
+    // port: 3000, // พอร์ตที่ต้องการใช้
+    // allowedHosts: [
+    //   "localhost",
+    //   "science-ppm-joining-francis.trycloudflare.com",
+    //   "siraphoprmutt.duckdns.org",
+    // ],
   },
   css: {
     preprocessorOptions: {

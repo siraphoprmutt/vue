@@ -100,46 +100,12 @@
 import { ref, onMounted } from "vue";
 import { useToast } from "vue-toastification";
 
-const apiUrl = "https://disappointed-phentermine-managers-fo.trycloudflare.com";
+const apiUrl = import.meta.env.VITE_API_URL;
+console.log("apiUrl:", apiUrl);
 const toast = useToast();
 
-const workshops = ref([
-  {
-    id: 1,
-    name: "Frontend",
-    image: "https://placehold.co/600x400",
-    price: 5000,
-    discount: 10,
-    date: "2024-04-01",
-    startTime: "09:00",
-    endTime: "16:00",
-  },
-  {
-    id: 2,
-    name: "Backend",
-    image: "https://placehold.co/600x400",
-    price: 6000,
-    discount: 20,
-    date: "2024-04-05",
-    startTime: "10:00",
-    endTime: "17:00",
-  },
-  {
-    id: 3,
-    name: "Fullstack",
-    image: "https://placehold.co/600x400",
-    price: 7000,
-    discount: 30,
-    date: "2024-04-10",
-    startTime: "08:30",
-    endTime: "15:30",
-  },
-]);
-
-const paymentAccounts = ref([
-  { account: "1234567890", displayName: "Krungsri - Siraphop (1234567890)" },
-  { account: "0987654321", displayName: "Kankornbank - Siraphop (0987654321)" },
-]);
+const workshops = ref([]);
+const paymentAccounts = ref([]);
 
 const formData = ref({
   email: "siraphop.rmutt@gmail.com",
@@ -184,18 +150,23 @@ const submitForm = async () => {
   try {
     const response = await fetch(`${apiUrl}/save-data`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: import.meta.env.VITE_API_KEY,
+      },
       body: JSON.stringify({
         ...formData.value,
         workshops: selectedWorkshops.value,
       }),
     });
-
+    console.log("response:", response);
     if (response.ok) {
       toast.clear();
       toast.success("ลงทะเบียนสำเร็จ!");
     } else {
-      throw new Error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      const error = await response.json();
+      console.log("error:", error);
+      throw new Error(error.statusText || "เกิดข้อผิดพลาดในการลงทะเบียน");
     }
   } catch (error) {
     toast.clear();
@@ -204,14 +175,25 @@ const submitForm = async () => {
 };
 
 const init = async () => {
+  toast.info("กำลังโหลดข้อมูล...", { timeout: false });
   try {
-    const response = await fetch(`${apiUrl}/`);
-    const data = await response.json();
-    if (data) {
-      console.log("data:", data);
+    const response = await fetch(`${apiUrl}/workshops`, {
+      headers: {
+        Authorization: import.meta.env.VITE_API_KEY,
+      },
+    });
+    console.log("response:", response);
+    if (!response.ok) {
+      throw new Error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
     }
+    const data = await response.json();
+    console.log("data:", data);
+    workshops.value = data.workshops;
+    paymentAccounts.value = data.paymentAccounts;
   } catch (error) {
-    toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+    // toast.error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
+  } finally {
+    toast.clear();
   }
 };
 
