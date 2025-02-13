@@ -1,1 +1,0 @@
-import{_ as n}from"./_plugin-vue_export-helper-DlAUqK2U.js";import{aS as r,aW as a,aO as t}from"./index-1BIDDnCO.js";const o={};function s(l,e){return t(),r("div",null,e[0]||(e[0]=[a("h1",null,"Dev Page",-1),a("p",null,"This is the Dev page.",-1)]))}const f=n(o,[["render",s]]);export{f as default};
